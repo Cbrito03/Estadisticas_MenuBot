@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const express = require('express');
+var http = require('http');
 const cors = require('cors');
 const app = express();
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
-
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ app.use(estadistica);
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, app, async () => { // Revisa si el mismo esta vivo
+http.createServer(app).listen(port, app, async () => { // Revisa si el mismo esta vivo
     console.log("API escuchando en puerto", port);
 
     console.log('Conectando a MongoDb...');
