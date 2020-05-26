@@ -26,9 +26,11 @@
     "localStorage": "^1.0.4",
     "moment": "^2.25.3",
     "moment-timezone": "^0.5.31",
+    "mongodb": "^3.5.7",
     "mongoose": "^5.9.13",
     "morgan": "^1.10.0",
     "node-localstorage": "^2.1.5",
+    "nodemon": "^2.0.4",
     "request": "^2.88.2"
   },
   "engines": {
