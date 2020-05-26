@@ -1,0 +1,37 @@
+{
+  "name": "webservicesnodejs",
+  "version": "1.0.0",
+  "description": "Ejemplo de WS en NodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "API",
+    "REST",
+    "NodeJS"
+  ],
+  "author": "Carlos Brito",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^3.2.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "constants": "0.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.4.1",
+    "localStorage": "^1.0.4",
+    "moment": "^2.25.3",
+    "moment-timezone": "^0.5.31",
+    "mongoose": "^5.9.13",
+    "morgan": "^1.10.0",
+    "node-localstorage": "^2.1.5",
+    "request": "^2.88.2"
+  },
+  "engines": {
+    "node": "^10.19.0",
+    "npm": "^6.13.4"
+  }
+}
