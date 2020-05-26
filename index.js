@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(estadistica);
 
-const port = process.env.PORT || 8080;
+const port = 8080;
 
 http.createServer(app).listen(port, app, async () => { // Revisa si el mismo esta vivo
     console.log("API escuchando en puerto", port);
