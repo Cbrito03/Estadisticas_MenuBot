@@ -43,19 +43,5 @@ app.listen(port, app, async () => { // Revisa si el mismo esta vivo
         process.exit(1)
     })*/
 
-    await mongoose.connect("mongodb://dbaas30.hyperp-dbaas.cloud.ibm.com:28255,dbaas29.hyperp-dbaas.cloud.ibm.com:28214,dbaas31.hyperp-dbaas.cloud.ibm.com:28036/admin?replicaSet=estadisticaMenuBot",
-    {
-        user: 'sixbell_menuBot',
-        pass: 'S1xb3ll_MenuBot_2o2o',
-        useNewUrlParser: true,
-        useFindAndModify: false,
-        useUnifiedTopology: true,
-        useCreateIndex: true
-    })
-    .then(() => console.log('Conexión establecida a MongoDb'))
-    .catch(error => {
-        console.log('No se ha logrado conectar a MongoDb :\n', error)
-        console.log('Deteniendo API...')
-        process.exit(1)
-    })
+   
 });
