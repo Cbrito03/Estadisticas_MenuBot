@@ -229,7 +229,7 @@ router.get('/consulta', (req, res) => {
         respuesta += "/interaccion/insert: <br> ";
         respuesta += "Sixbell - Versión: 1.0.0 <br>";
 
-    console.log(respuesta);
+    console.log("[Brito] :: " + respuesta);
 
     res.status(200).send(respuesta);
 });
