@@ -17,36 +17,23 @@ router.post("/opcion/insert", async (req, res)=>{
     now = now.tz("America/Guatemala").format("YYYY-MM-DD");
     console.log('Entro a /opcion/insert :: ', now);
 
+    var grupoACD = req.body.grupoACD;
+
+    if( grupoACD == ""){ grupoACD = null; }
+
 	const opciones = new Opcion(
 	{
         conversacion_id : req.body.conversacion_id,
         pais : req.body.pais,
         app : req.body.app,
         fecha : now,
-        opcion : req.body.opcion
+        opcion : req.body.opcion,
+        transferencia : req.body.transferencia,
+        fueraHorario : req.body.fueraHorario,
+        grupoACD : grupoACD
     });    
 
     const result = await opciones.save()
-    res.status(201).send(result);
-});
-
-router.post("/interaccion/insert", async (req, res)=>{
-    var now = moment();
-    now = now.tz("America/Guatemala").format("YYYY-MM-DD");
-    console.log('Entro a /interaccion/insert :: ', now);
-
-    const interacciones = new Interaccion(
-    {
-        conversacion_id : req.body.conversacion_id,
-        pais : req.body.pais,
-        app : req.body.app,
-        fecha : now,
-        transferencia : req.body.transferencia,
-        fueraHorario : req.body.fueraHorario,
-        grupoACD : req.body.grupoACD
-    });
-
-    const result = await interacciones.save()
     res.status(201).send(result);
 });
 

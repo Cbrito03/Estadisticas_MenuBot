@@ -21,7 +21,21 @@ var opcionSchema = new Schema({
 	opcion: {
 		type: Schema.Types.String,
 		required: true
-	}
+	},
+    transferencia: {
+        type: Schema.Types.String,
+        required: true,
+        default: false
+    },
+    fueraHorario: {
+        type: Schema.Types.String,
+        required: true,
+        default: false
+    },
+    grupoACD:{
+        type: Schema.Types.String,
+        default: "null"
+    }
 });
 
 const Opciones = mongoose.model('Opciones', opcionSchema);
