@@ -5,6 +5,9 @@ const app = express();
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
+var fs = require('fs');
+
+var buffer = require('fs').readFileSync("cert/cert.pem");
 
 dotenv.config();
 
@@ -23,14 +26,12 @@ app.listen(port, app, async () => { // Revisa si el mismo esta vivo
     console.log("[Brito] :: API escuchando en puerto", port);
 
     console.log('[Brito] :: Conectando a MongoDb...');
-    //console.log('URL: mongodb://localhost/estadisticaMenuBot');
-    //console.log('URL: mongodb://dbaas30.hyperp-dbaas.cloud.ibm.com:28255,dbaas29.hyperp-dbaas.cloud.ibm.com:28214,dbaas31.hyperp-dbaas.cloud.ibm.com:28036/admin?replicaSet=estadisticaMenuBot');
-    console.log('[Brito] :: URL: mongodb://'.concat(process.env.URL_MONGODB).concat('/testing_abastible'))
 
-    await mongoose.connect('mongodb://$USERNAME:$PASSWORD@617dc8cb-c565-4f72-b956-09be96d3233b-0.blijs0dd0dcr4f55oehg.databases.appdomain.cloud:32112,617dc8cb-c565-4f72-b956-09be96d3233b-1.blijs0dd0dcr4f55oehg.databases.appdomain.cloud:32112/ibmclouddb?authSource=admin&replicaSet=replset',
+    await mongoose.connect('mongodb://ibm_cloud_e7aefbf8_0f75_4fb4_b2d4_eac085a84ad9:5e5df1276392b439147cd7c215a9001161775ef946d17d7cce42b69464727025@617dc8cb-c565-4f72-b956-09be96d3233b-0.blijs0dd0dcr4f55oehg.databases.appdomain.cloud:32112,617dc8cb-c565-4f72-b956-09be96d3233b-1.blijs0dd0dcr4f55oehg.databases.appdomain.cloud:32112/ibmclouddb?authSource=admin&replicaSet=replset',
     {
-        user: 'ibm_cloud_0704e43b_5a90_46e8_a3f6_51248478ada4',
-        pass: '"b2ba3198f486abd8115e2b404282ff52749c090a1a8b7c4135d3f6e85581f78e',
+        tls: true,    
+        tlsCAFile: "cert/cert.pem",
+        useUnifiedTopology: true ,
         useNewUrlParser: true,
         useFindAndModify: false,
         useUnifiedTopology: true,
