@@ -221,6 +221,18 @@ router.post("/interaccion/search", async (req, res)=>{
     res.status(200).send(tranferencias);
 });
 
+router.get('/consulta', (req, res) => {
+    var respuesta = "Bienvenido a las estadisticas menú Bot, las opciones disponibles son: <br>";
+        respuesta += "/opcion/insert: <br> ";
+        respuesta += "/interaccion/insert: <br> ";
+        respuesta += "/opcion/search: <br> ";
+        respuesta += "/interaccion/insert: <br> ";
+        respuesta += "Sixbell - Versión: 1.0.0 <br>";
+
+    console.log(respuesta);
+
+    res.status(200).send(respuesta);
+});
 
 function getDates(startDate, stopDate)
 {
@@ -232,7 +244,6 @@ function getDates(startDate, stopDate)
         currentDate = moment(currentDate).add(1, 'days');
     }
     return dateArray;
-}
-   
+}   
 
 module.exports = router

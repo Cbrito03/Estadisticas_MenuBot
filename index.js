@@ -26,7 +26,7 @@ app.listen(port, app, async () => { // Revisa si el mismo esta vivo
     //console.log('URL: mongodb://localhost/estadisticaMenuBot');
     console.log('URL: mongodb://dbaas30.hyperp-dbaas.cloud.ibm.com:28255,dbaas29.hyperp-dbaas.cloud.ibm.com:28214,dbaas31.hyperp-dbaas.cloud.ibm.com:28036/admin?replicaSet=estadisticaMenuBot');
 
-    await mongoose.connect('mongodb://dbaas30.hyperp-dbaas.cloud.ibm.com:28255,dbaas29.hyperp-dbaas.cloud.ibm.com:28214,dbaas31.hyperp-dbaas.cloud.ibm.com:28036/admin?replicaSet=estadisticaMenuBot',
+    /*await mongoose.connect('mongodb://dbaas30.hyperp-dbaas.cloud.ibm.com:28255,dbaas29.hyperp-dbaas.cloud.ibm.com:28214,dbaas31.hyperp-dbaas.cloud.ibm.com:28036/admin?replicaSet=estadisticaMenuBot',
     {
         user: 'sixbell_menuBot',
         pass: 'S1xb3ll_MenuBot_2o2o',
@@ -40,5 +40,5 @@ app.listen(port, app, async () => { // Revisa si el mismo esta vivo
         console.log('No se ha logrado conectar a MongoDb :\n', error)
         console.log('Deteniendo API...')
         process.exit(1)
-    })   
+    });*/
 });
