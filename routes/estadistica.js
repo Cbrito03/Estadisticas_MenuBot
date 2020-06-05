@@ -1,8 +1,14 @@
 const bcrypt = require('bcryptjs');
 const express = require('express');
 const Opcion = require('../models/Opcion');
-const Interaccion = require('../models/Interaccion');
+const Usuario = require('../models/Usuario');
+const Window = require('window');
+//const bcrypt = require('bcrypt');
 const router = express.Router();
+
+const window = new Window();
+
+var BCRYPT_SALT_ROUNDS = 12;
 
 const { check, validationResult } = require('express-validator');
 
@@ -37,13 +43,55 @@ router.post("/opcion/insert", async (req, res)=>{
     res.status(201).send(result);
 });
 
+router.post("/usuario/insert", async (req, res)=>{
+    
+    console.log('Entro a /usuario/insert :: ');
+    
+    const password = bcrypt.hashSync(req.body.password, BCRYPT_SALT_ROUNDS);
+
+    const usuarios = new Usuario(
+    {
+        usuario : req.body.usuario,
+        password : password,
+        nombre : req.body.nombre,
+        perfil : req.body.perfil
+    });
+
+    console.log(usuarios);    
+
+    const result = await usuarios.save()
+    res.status(201).send(result);
+});
+
 /************************************** Search **************************************/
-router.post("/opcion/search", async (req, res)=>{
+router.post("/usuario/login", async (req, res)=>{
+    console.log('Entro a /usuario/login');
+    
+    var payload = { "usuario": req.body.usuario };
+
+    const usuario = await Usuario.find(payload);
+    if (usuario.length < 1) return res.status(200).send('NOK');
+
+    if (!bcrypt.compareSync(req.body.password, usuario[0].password)) return res.status(200).send('NOK contraseña');
+
+    const result = {
+        "nombre" : usuario[0].nombre,
+        "perfil" : usuario[0].perfil,
+        "status" : usuario[0].status
+    }
+    
+    res.status(200).send(result);
+});
+
+router.post("/opcion/searchOp", async (req, res)=>{
 	console.log('Entro a /opcion/search');
 	var pais = req.body.pais;
     var fecha = req.body.fecha.split(" - ");
     var result = {};
     var array_opciones = [];
+
+    var array_fecha = [];
+    var obj = {};
 
     var fecha_inicio = moment(new Date(Date.parse(fecha[0])).toISOString()).format("YYYY-MM-DD");
     var fecha_fin =  moment(new Date(Date.parse(fecha[1])).toISOString()).format("YYYY-MM-DD");
@@ -58,7 +106,7 @@ router.post("/opcion/search", async (req, res)=>{
     };
 
     const opcion = await Opcion.find(payload);
-    if (opcion.length < 1) return res.status(404).send('No hay datos');
+    if (opcion.length < 1) return res.status(200).send('NOK');
 
     var dateArray = getDates(fecha_inicio, fecha_fin);
     for (var i = 0; i < dateArray.length; i ++ )
@@ -68,40 +116,60 @@ router.post("/opcion/search", async (req, res)=>{
             if(opcion[j].fecha.toString() == new Date(dateArray[i]).toString())
             {
                 fecha_op = opcion[j].fecha.toISOString().split("T")[0];
-                array_opciones.push( fecha_op + ' $$ ' + opcion[j].opcion);    
+                array_opciones.push( fecha_op + ' $$ ' + opcion[j].opcion.replace(/ - /g, "-"));    
             }
         }
     }
 
     array_opciones.forEach(function(numero)
     {
+        var dato_fecha =  numero.split(" $$ ")[0];
         result[numero] = (result[numero] || 0) + 1;
     });
 
+    const window = new Window();
 
-    /*for(var fech in result)
+    for(var f in result)
     {
-        var nom = fech.split(" $$ ");
-        //console.log(nom[0], " :: ",nom[1], " :: ", result[fech]);
-    }*/
+        var fecha = f.split(" $$ ")[0];
+        var opciones = f.split(" $$ ")[1];
+        var cantidad = result[f];
 
-    res.status(200).send(result);
+        if(array_fecha.includes(fecha))
+        {
+            Object.defineProperty(window["obj_"+fecha], opciones , {value: cantidad,enumerable: true});
+        }
+        else
+        {
+            array_fecha.push(fecha);
+            window["obj_"+fecha] = {};
+            Object.defineProperty(window["obj_"+fecha], opciones , {value: cantidad,enumerable: true});
+        }
+    }
+
+    for(var i = 0; i < array_fecha.length; i++)
+    {
+        obj[array_fecha[i]] = window["obj_"+array_fecha[i]];
+    }
+
+    res.status(200).send(obj);
 });
 
-router.post("/interaccion/search", async (req, res)=>{
+router.post("/opcion/searchIn", async (req, res)=>{
     console.log('Entro a /interaccion/search');
-    var pais = req.body.pais;
-    var fecha = req.body.fecha.split(" - ");
+    var pais = req.body.pais, fecha = req.body.fecha.split(" - ");
     var result = {};
 
     var array_interacciones = [];
-    var array_trans = [];
-    var array_colas = [];
-    var array_horario = [];
+    var array_transferencias = [];
+    var array_fueraHorario = [];
 
-    var result_inte = {}, result_intes = {};
-    var result_tran = {}, result_trans = {};
-    var result_cola = {}, result_colas = {};
+    var result_inte = {}, result_interacciones = {};
+    var result_tran = {}; result_transacciones = {}
+    var result_horario = {}, result_fueraHorario = {};
+
+    var array_fecha = [];
+    var obj = {};
 
     var cont_int = 0;
 
@@ -118,30 +186,8 @@ router.post("/interaccion/search", async (req, res)=>{
         "pais" : pais
     };
 
-    var payload_transferencia = {
-        "fecha": {
-            $gte: fecha_inicio, $lte: fecha_fin 
-        }, 
-        "pais" : pais,
-        "transferencia" : true
-    };
-
-    /*var payload_horario = {
-        "fecha": {
-            $gte: fecha_inicio, $lte: fecha_fin 
-        }, 
-        "pais" : pais,
-        "fueraHorario" : fueraHorario
-    };*/
-
-
-    const interaccion = await Interaccion.find(payload_interaccion);
-    if (interaccion.length < 1) return res.status(404).send('No hay datos');
-
-    const tranferencias = await Interaccion.find(payload_transferencia);
-    if (tranferencias.length < 1) return res.status(404).send('No hay datos');
-
-   
+    const interaccion = await Opcion.find(payload_interaccion);
+    if (interaccion.length < 1) return res.status(200).send('NOK');    
 
     for (var i = 0; i < dateArray.length; i ++ )
     {
@@ -149,63 +195,128 @@ router.post("/interaccion/search", async (req, res)=>{
         {                     
             if(interaccion[j].fecha.toString() == new Date(dateArray[i]).toString())
             {
-                fecha_op = interaccion[j].fecha.toISOString().split("T")[0];
-                array_interacciones.push( fecha_op + ' $$ ' + interaccion[j].conversacion_id);    
-            }
-        }
+                var fecha_op = interaccion[j].fecha.toISOString().split("T")[0];
 
-        for (var t = 0; t < tranferencias.length; t++)
-        {                     
-            if(tranferencias[t].fecha.toString() == new Date(dateArray[i]).toString())
-            {
-                fecha_trans = tranferencias[t].fecha.toISOString().split("T")[0];
-                array_trans.push( fecha_trans + ' $$ '+ t +' $$' + tranferencias[t].transferencia);    
+                array_interacciones.push( fecha_op + ' $$ ' + interaccion[j].conversacion_id);
+                
+                if(interaccion[j].transferencia === "true")
+                {
+                    array_transferencias.push( fecha_op + ' $$ ' + interaccion[j].grupoACD);   
+                }
+                else if(interaccion[j].fueraHorario === "true")
+                {
+                    array_fueraHorario.push( fecha_op );
+                }  
             }
         }
     }
 
     array_interacciones.forEach(function(numero)
     {
-        result_intes[numero] = (result_intes[numero] || 0) + 1;
+        result_inte[numero] = (result_inte[numero] || 0) + 1;
     });
 
-    array_trans.forEach(function(numero)
+    array_transferencias.forEach(function(numero)
     {
-        result_trans[numero] = (result_trans[numero] || 0) + 1;
-    });   
+        result_tran[numero] = (result_tran[numero] || 0) + 1;
+    });
+
+    array_fueraHorario.forEach(function(numero)
+    {
+        result_horario[numero] = (result_horario[numero] || 0) + 1;
+    });
 
     for (var i = 0; i < dateArray.length; i ++ )
     {
-        for(var str in result_intes)
+        for(var str in result_inte)
         {
             var fech = str.split(" $$ ")[0];
 
             if(fech == dateArray[i])
             {
-                cont_int = cont_int + result_intes[str];
-                result_inte[dateArray[i]] = cont_int;
+                cont_int = cont_int + result_inte[str];
+                result_interacciones[dateArray[i]] = cont_int;
             }
             else
             {
                 cont_int = 0;
-                if(!result_inte.hasOwnProperty(dateArray[i]))
+                if(!result_interacciones.hasOwnProperty(dateArray[i]))
                 {
-                    result_inte[dateArray[i]] = cont_int;  
+                    result_interacciones[dateArray[i]] = cont_int;  
                 }
                           
             }
         }
     }
 
-    console.log(result_inte);
+     for(var f in result_tran)
+    {
+        var fecha = f.split(" $$ ")[0];
+        var acdColas = f.split(" $$ ")[1];
+        var cantidad = result_tran[f];
 
-     console.log(" result_trans :: ", result_trans);
+        //console.log("result_tran",fecha,acdColas,cantidad);
 
-    console.log(" result_trans :: ", result_trans);
+        if(array_fecha.includes(fecha))
+        {
+            Object.defineProperty(window["obj_"+fecha], acdColas , {value: cantidad,enumerable: true});
+        }
+        else
+        {
+            array_fecha.push(fecha);
+            window["obj_"+fecha] = {};
+            Object.defineProperty(window["obj_"+fecha], acdColas , {value: cantidad,enumerable: true});
+        }
+    }
 
+    for(var i = 0; i < array_fecha.length; i++)
+    {
+        obj[array_fecha[i]] = window["obj_"+array_fecha[i]];
+    }
+
+    var resultado = {
+        "interacciones" : result_interacciones,
+        "transferencias" : obj,
+        "fueraHorario" : result_horario
+    }
+
+    //console.log(resultado);
+
+    res.status(200).send(resultado);
+});
+
+router.get("/opcion/pais", async (req, res)=>{
+    console.log('Entro a /opcion/search');
+    var result = {};
+    var array_opciones = [];
+
+    const opcion = await Opcion.find();
+    if (opcion.length < 1) return res.status(200).send('NOK');
     
+    for (var j = 0; j < opcion.length; j++)
+    {
+        pais = opcion[j].pais;
+        array_opciones.push(pais); 
+    }
 
-    res.status(200).send(tranferencias);
+    array_opciones.forEach(function(numero)
+    {
+        result[numero] = (result[numero] || 0) + 1;
+    });
+
+    for(var p in result)
+    {
+        switch (p)
+        {
+            case "GT": result[p]= "Guatemala"; break;
+            case "CR": result[p]= "Costa Rica"; break;
+            case "HN": result[p]= "Honduras"; break;
+            case "NI": result[p]= "Nicaragua"; break;
+            case "PAN": result[p]= "Panamá"; break;
+        }
+    }
+
+    res.status(200).send(result);
 });
 
 router.get('/consulta', (req, res) => {
