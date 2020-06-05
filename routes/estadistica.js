@@ -322,10 +322,11 @@ router.get("/opcion/pais", async (req, res)=>{
 router.get('/consulta', (req, res) => {
     var respuesta = "Bienvenido a las estadisticas menú Bot, las opciones disponibles son: <br>";
         respuesta += "/opcion/insert: <br> ";
-        respuesta += "/interaccion/insert: <br> ";
-        respuesta += "/opcion/search: <br> ";
-        respuesta += "/interaccion/insert: <br> ";
-        respuesta += "Sixbell - Versión: 1.0.0 <br>";
+        respuesta += "/opcion/searchIn: <br> ";
+        respuesta += "/opcion/searchOp: <br> ";
+        respuesta += "/usuario/insert: <br> ";
+        respuesta += "/usuario/login: <br> ";
+        respuesta += "Sixbell - Versión: 2.0.0 <br>";
 
     console.log("[Brito] :: " + respuesta);
 
