@@ -19,6 +19,7 @@ app.use(bodyParser.json({ limit: '50mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(estadistica);
+app.use(express.static("web"));
 
 const port = process.env.PORT || 8080;
 

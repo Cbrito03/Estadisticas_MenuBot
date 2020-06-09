@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const express = require('express');
 const Opcion = require('../models/Opcion');
 const Usuario = require('../models/Usuario');
+const Pais = require('../models/Pais');
 const Window = require('window');
 //const bcrypt = require('bcrypt');
 const router = express.Router();
@@ -63,6 +64,22 @@ router.post("/usuario/insert", async (req, res)=>{
     res.status(201).send(result);
 });
 
+router.post("/pais/insert", async (req, res)=>{
+    
+    console.log('Entro a /pais/insert :: ');
+
+    const paises = new Pais(
+    {
+        pais_id : req.body.pais_id,
+        pais : req.body.pais
+    });
+
+    console.log(paises);    
+
+    const result = await paises.save()
+    res.status(201).send(result);
+});
+
 /************************************** Search **************************************/
 router.post("/usuario/login", async (req, res)=>{
     console.log('Entro a /usuario/login');
@@ -84,7 +101,7 @@ router.post("/usuario/login", async (req, res)=>{
 });
 
 router.post("/opcion/searchOp", async (req, res)=>{
-	console.log('Entro a /opcion/search');
+	console.log('Entro a /opcion/searchOp');
 	var pais = req.body.pais;
     var fecha = req.body.fecha.split(" - ");
     var result = {};
@@ -156,7 +173,7 @@ router.post("/opcion/searchOp", async (req, res)=>{
 });
 
 router.post("/opcion/searchIn", async (req, res)=>{
-    console.log('Entro a /interaccion/search');
+    console.log('Entro a /interaccion/searchIn');
     var pais = req.body.pais, fecha = req.body.fecha.split(" - ");
     var result = {};
 
@@ -285,38 +302,13 @@ router.post("/opcion/searchIn", async (req, res)=>{
     res.status(200).send(resultado);
 });
 
-router.get("/opcion/pais", async (req, res)=>{
-    console.log('Entro a /opcion/search');
-    var result = {};
-    var array_opciones = [];
+router.get("/pais/search", async (req, res)=>{
+    console.log('Entro a /pais/search');
 
-    const opcion = await Opcion.find();
-    if (opcion.length < 1) return res.status(200).send('NOK');
+    const pais = await Pais.find();
+    if (pais.length < 1) return res.status(200).send('NOK');
     
-    for (var j = 0; j < opcion.length; j++)
-    {
-        pais = opcion[j].pais;
-        array_opciones.push(pais); 
-    }
-
-    array_opciones.forEach(function(numero)
-    {
-        result[numero] = (result[numero] || 0) + 1;
-    });
-
-    for(var p in result)
-    {
-        switch (p)
-        {
-            case "GT": result[p]= "Guatemala"; break;
-            case "CR": result[p]= "Costa Rica"; break;
-            case "HN": result[p]= "Honduras"; break;
-            case "NI": result[p]= "Nicaragua"; break;
-            case "PAN": result[p]= "Panamá"; break;
-        }
-    }
-
-    res.status(200).send(result);
+    res.status(200).send(pais);
 });
 
 router.get('/consulta', (req, res) => {
