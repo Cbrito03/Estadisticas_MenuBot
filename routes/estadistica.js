@@ -4,7 +4,6 @@ const Opcion = require('../models/Opcion');
 const Usuario = require('../models/Usuario');
 const Pais = require('../models/Pais');
 const Window = require('window');
-//const bcrypt = require('bcrypt');
 const router = express.Router();
 
 const window = new Window();
@@ -25,6 +24,20 @@ router.post("/opcion/insert", async (req, res)=>{
     console.log('Entro a /opcion/insert :: ', now);
 
     var grupoACD = req.body.grupoACD;
+    var rrss = req.body.rrss;
+
+    switch (rrss)
+    {
+        case 'FB':
+            rrss = "Facebook"
+        break;
+        case 'TW':
+            rrss = "Twitter"
+        break;
+        case 'WA':
+            rrss = "WhatsApp"
+        break;       
+    }
 
     if( grupoACD == ""){ grupoACD = null; }
 
@@ -33,6 +46,7 @@ router.post("/opcion/insert", async (req, res)=>{
         conversacion_id : req.body.conversacion_id,
         pais : req.body.pais,
         app : req.body.app,
+        rrss : rrss,
         fecha : now,
         opcion : req.body.opcion,
         transferencia : req.body.transferencia,
@@ -103,6 +117,7 @@ router.post("/usuario/login", async (req, res)=>{
 router.post("/opcion/searchOp", async (req, res)=>{
 	console.log('Entro a /opcion/searchOp');
 	var pais = req.body.pais;
+    var rrss = req.body.rrss;
     var fecha = req.body.fecha.split(" - ");
     var result = {};
     var array_opciones = [];
@@ -121,6 +136,13 @@ router.post("/opcion/searchOp", async (req, res)=>{
         }, 
         "pais" : pais
     };
+
+    if(rrss !== "General")
+    {
+        payload.rrss = rrss;
+    }
+    console.log("[playload] :: ", payload);
+   
 
     const opcion = await Opcion.find(payload);
     if (opcion.length < 1) return res.status(200).send('NOK');
@@ -175,6 +197,7 @@ router.post("/opcion/searchOp", async (req, res)=>{
 router.post("/opcion/searchIn", async (req, res)=>{
     console.log('Entro a /interaccion/searchIn');
     var pais = req.body.pais, fecha = req.body.fecha.split(" - ");
+    var rrss = req.body.rrss;
     var result = {};
 
     var array_interacciones = [];
@@ -194,7 +217,7 @@ router.post("/opcion/searchIn", async (req, res)=>{
     var fecha_fin =  moment(new Date(Date.parse(fecha[1])).toISOString()).format("YYYY-MM-DD");
     var dateArray = getDates(fecha_inicio, fecha_fin);
 
-    console.log('pais ::', pais, ' :: fecha_inicio :: ', new Date(fecha_inicio), ' :: fecha_fin :: ', new Date(fecha_fin));
+    console.log('pais ::', pais, ' :: fecha_inicio :: ', fecha_inicio, ' :: fecha_fin :: ', new Date(fecha_fin));
 
     var payload_interaccion = {
         "fecha": {
@@ -202,6 +225,14 @@ router.post("/opcion/searchIn", async (req, res)=>{
         }, 
         "pais" : pais
     };
+
+
+    if(rrss !== "General")
+    {
+        payload_interaccion.rrss = rrss;
+    }
+
+    console.log("[playload] :: ", payload_interaccion);
 
     const interaccion = await Opcion.find(payload_interaccion);
     if (interaccion.length < 1) return res.status(200).send('NOK');    
@@ -318,7 +349,7 @@ router.get('/consulta', (req, res) => {
         respuesta += "/opcion/searchOp: <br> ";
         respuesta += "/usuario/insert: <br> ";
         respuesta += "/usuario/login: <br> ";
-        respuesta += "Sixbell - Versión: 2.0.0 <br>";
+        respuesta += "Sixbell - Versión: 4.0.0 <br>";
 
     console.log("[Brito] :: " + respuesta);
 

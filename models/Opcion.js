@@ -22,6 +22,10 @@ var opcionSchema = new Schema({
 		type: Schema.Types.String,
 		required: true
 	},
+    rrss: {
+        type: Schema.Types.String,
+        required: true
+    },
     transferencia: {
         type: Schema.Types.String,
         required: true,

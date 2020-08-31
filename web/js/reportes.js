@@ -97,6 +97,7 @@ $(".caraga_reporte").click(function()
 
 	var pais = $('#select_pais').val();
 	var tipo = $('#select_tipo').val();
+	var rrss = $('#select_rrss').val();
 	var fecha = $('#Rfecha').val();
 
     var array_fechas = [];
@@ -120,9 +121,12 @@ $(".caraga_reporte").click(function()
 		{
 			if(fecha !== "")
 			{
-				filename = 'Estadisticas '+ $('#select_pais option:selected').text() + ' - ' +  $('#select_tipo option:selected').text();
+				filename = 'Estadisticas '+ $('#select_pais option:selected').text() + ' - ' + rrss + ' - ' + $('#select_tipo option:selected').text();
+				
 				$('#titulo').text(filename);
+
 				filename = filename + "_"+fecha.replace(/\//g,'-');
+
 				if (tipo === "op") { request += "searchOp";} else { request += "searchIn"; }
 
 				$(".caraga_reporte").attr("disabled", true);
@@ -133,11 +137,16 @@ $(".caraga_reporte").click(function()
 
 				var payload = {
 				    "pais": pais,
-				    "fecha": fecha 
+				    "fecha": fecha,
+				    "rrss": rrss 
 				};
+
 				console.log(payload);
+
 				payload = JSON.stringify(payload);
+
 				var result;
+
 				var settings = {
 					"async": true,
 					"cache": false,
@@ -152,6 +161,7 @@ $(".caraga_reporte").click(function()
 					"processData": false,
 					"data": payload
 				};
+
 				$.ajax(settings).done(function ( data, textStatus, jqXHR )
 				{	
 					result = jqXHR;
@@ -355,6 +365,7 @@ $(".caraga_reporte").click(function()
 								}
 							}
 						}
+
 	    				$('.tbl_int').DataTable({
 	                        "destroy": true,
 	                        "pageLength": 10,
@@ -369,11 +380,9 @@ $(".caraga_reporte").click(function()
 	                            "info": ""
 	                        }                               
 	                    } );
-						
 					}
 					else if (result.status === 200 && result.responseText == 'NOK') 
 					{
-
 						$('.descargar_excel').css("display", "none");
 						$("#tabla_reporte").empty();
 						$('#titulo').text('Estadisticas ');
@@ -391,12 +400,7 @@ $(".caraga_reporte").click(function()
 					result = "Error";
 
 					$(".caraga_reporte").attr("disabled", false);
-			    	//console.log(jqXHR, textStatus, errorThrown);
-			  	});
-
-				//var result = sendRequest("POST", request, payload );
-
-				
+			  	});				
 			}
 			else
 			{
@@ -417,10 +421,8 @@ $(".caraga_reporte").click(function()
 	}
 	else
 	{
-
 	    $("#select_pais").css("border-color", "#ef3829");
 		$('.cargando').css("display", "none");
 		$.alert({title: 'Advertencia',content: 'Seleccione una pais para continuar',});
 	}
-
 });
