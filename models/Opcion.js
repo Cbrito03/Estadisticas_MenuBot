@@ -24,7 +24,7 @@ var opcionSchema = new Schema({
 	},
     rrss: {
         type: Schema.Types.String,
-        required: true
+        required: false
     },
     transferencia: {
         type: Schema.Types.String,
