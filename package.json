@@ -24,7 +24,7 @@
     "express": "^4.17.1",
     "express-validator": "^6.4.1",
     "localStorage": "^1.0.4",
-    "moment": "^2.25.3",
+    "moment": "^2.29.4",
     "moment-timezone": "^0.5.31",
     "mongodb": "^3.5.7",
     "mongoose": "^5.9.13",
